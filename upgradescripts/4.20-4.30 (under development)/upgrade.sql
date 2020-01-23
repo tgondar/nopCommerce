@@ -137,6 +137,72 @@ set @resources='
   <LocaleResource Name="Admin.Customers.Customers.Fields.Newsletter.Hint">
     <Value>Choose stores to subscribe to newsletter.</Value>
   </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.ChooseShippingTitle">
+    <Value>Shipping Method</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.Country">
+    <Value>Country</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.Country.Required">
+    <Value>Country is required</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.EstimatedDeliveryPrefix">
+    <Value>Estimated Delivery on</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.NoSelectedShippingOption">
+    <Value>Please select the address you want to ship from</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.NoShippingOptions">
+    <Value>No shipping options</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.PriceTitle">
+    <Value>Shipping:</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.SelectShippingOption">
+    <Value>Apply</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.ShippingOption.EstimatedDelivery">
+    <Value>Estimated Delivery</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.ShippingOption.Name">
+    <Value>Name</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.ShippingOption.Price">
+    <Value>Price</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.ShipToTitle">
+    <Value>Ship to</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.StateProvince">
+    <Value>State / province</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.ToAddress">
+    <Value>to</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.ViaProvider">
+    <Value>via</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.ZipPostalCode">
+    <Value>Zip / postal code</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.EstimateShipping.ZipPostalCode.Required">
+    <Value>Zip / postal code is required</Value>
+  </LocaleResource>
+  <LocaleResource Name="Products.QuantityShouldBePositive">
+    <Value>Quantity should be positive</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Shipping.FixedByWeightByTotal.Fields.TransitDays">
+    <Value>Transit days</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Shipping.FixedByWeightByTotal.Fields.TransitDays.Hint">
+    <Value>The number of days of delivery of the goods.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Pickup.PickupInStore.Fields.TransitDays">
+    <Value>Transit days</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Pickup.PickupInStore.Fields.TransitDays.Hint">
+    <Value>The number of days of delivery of the goods to pickup point.</Value>
+  </LocaleResource>
 </Language>
 '
 
@@ -248,5 +314,23 @@ IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[StorePickup
 BEGIN
 	ALTER TABLE [StorePickupPoint] ADD
 	Longitude decimal(18, 8) NULL
+END
+GO
+
+--new column
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ShippingByWeightByTotalRecord]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
+and NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = object_id('[ShippingByWeightByTotalRecord]') AND NAME = 'TransitDays')
+BEGIN
+	ALTER TABLE [ShippingByWeightByTotalRecord]
+	ADD TransitDays int NULL
+END
+GO
+
+--new column
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[StorePickupPoint]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
+and NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = object_id('[StorePickupPoint]') AND NAME = 'TransitDays')
+BEGIN
+	ALTER TABLE [StorePickupPoint]
+	ADD TransitDays int NULL
 END
 GO

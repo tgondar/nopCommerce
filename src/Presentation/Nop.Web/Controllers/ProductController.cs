@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Customers;
@@ -10,9 +14,11 @@ using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Security;
 using Nop.Core.Rss;
 using Nop.Services.Catalog;
+using Nop.Services.Directory;
 using Nop.Services.Events;
 using Nop.Services.Localization;
 using Nop.Services.Logging;
+using Nop.Services.Media;
 using Nop.Services.Messages;
 using Nop.Services.Orders;
 using Nop.Services.Security;
@@ -37,14 +43,19 @@ namespace Nop.Web.Controllers
         private readonly CatalogSettings _catalogSettings;
         private readonly IAclService _aclService;
         private readonly ICompareProductsService _compareProductsService;
+        private readonly ICurrencyService _currencyService;
         private readonly ICustomerActivityService _customerActivityService;
+        private readonly IDownloadService _downloadService;
         private readonly IEventPublisher _eventPublisher;
         private readonly ILocalizationService _localizationService;
         private readonly IOrderService _orderService;
         private readonly IPermissionService _permissionService;
+        private readonly IProductAttributeParser _productAttributeParser;
+        private readonly IProductAttributeService _productAttributeService;
         private readonly IProductModelFactory _productModelFactory;
         private readonly IProductService _productService;
         private readonly IRecentlyViewedProductsService _recentlyViewedProductsService;
+        private readonly IShoppingCartModelFactory _shoppingCartModelFactory;
         private readonly IShoppingCartService _shoppingCartService;
         private readonly IStoreContext _storeContext;
         private readonly IStoreMappingService _storeMappingService;
@@ -63,14 +74,19 @@ namespace Nop.Web.Controllers
             CatalogSettings catalogSettings,
             IAclService aclService,
             ICompareProductsService compareProductsService,
+            ICurrencyService currencyService,
             ICustomerActivityService customerActivityService,
+            IDownloadService downloadService,
             IEventPublisher eventPublisher,
             ILocalizationService localizationService,
             IOrderService orderService,
             IPermissionService permissionService,
+            IProductAttributeParser productAttributeParser,
+            IProductAttributeService productAttributeService,
             IProductModelFactory productModelFactory,
             IProductService productService,
             IRecentlyViewedProductsService recentlyViewedProductsService,
+            IShoppingCartModelFactory shoppingCartModelFactory,
             IShoppingCartService shoppingCartService,
             IStoreContext storeContext,
             IStoreMappingService storeMappingService,
@@ -85,14 +101,19 @@ namespace Nop.Web.Controllers
             _catalogSettings = catalogSettings;
             _aclService = aclService;
             _compareProductsService = compareProductsService;
+            _currencyService = currencyService;
             _customerActivityService = customerActivityService;
+            _downloadService = downloadService;
             _eventPublisher = eventPublisher;
             _localizationService = localizationService;
             _orderService = orderService;
             _permissionService = permissionService;
+            _productAttributeParser = productAttributeParser;
+            _productAttributeService = productAttributeService;
             _productModelFactory = productModelFactory;
             _productService = productService;
             _recentlyViewedProductsService = recentlyViewedProductsService;
+            _shoppingCartModelFactory = shoppingCartModelFactory;
             _shoppingCartService = shoppingCartService;
             _storeContext = storeContext;
             _storeMappingService = storeMappingService;
@@ -183,6 +204,85 @@ namespace Nop.Web.Controllers
             var productTemplateViewPath = _productModelFactory.PrepareProductTemplateViewPath(product);
 
             return View(productTemplateViewPath, model);
+        }
+
+        [PublicAntiForgery]
+        [HttpPost]
+        public virtual IActionResult EstimateShipping([FromQuery] ProductEstimateShippingModel model, IFormCollection form)
+        {
+            if (model == null)
+                return BadRequest();
+            
+            var product = _productService.GetProductById(model.ProductId);
+            if (product == null || product.Deleted || !product.Published)
+                return NotFound();
+
+            var errors = new List<string>();
+
+            if (string.IsNullOrEmpty(model.ZipPostalCode))
+                errors.Add(_localizationService.GetResource("Products.EstimateShipping.ZipPostalCode.Required"));
+
+            if (model.CountryId == null || model.CountryId == 0)
+                errors.Add(_localizationService.GetResource("Products.EstimateShipping.Country.Required"));
+
+            if (errors.Count > 0)
+                return BadRequest(new { Errors = errors });
+
+            var wrappedProduct = new ShoppingCartItem()
+            {
+                StoreId = _storeContext.CurrentStore.Id,
+                ShoppingCartTypeId = (int)ShoppingCartType.ShoppingCart,
+                CustomerId = _workContext.CurrentCustomer.Id,
+                Customer = _workContext.CurrentCustomer,
+                ProductId = product.Id,
+                Product = product,
+                CreatedOnUtc = DateTime.UtcNow
+            };
+
+            //customer entered price
+            if (product.CustomerEntersPrice)
+            {
+                var customerEnteredPriceConverted = decimal.Zero;
+
+                foreach (var formKey in form.Keys)
+                {
+                    if (formKey.Equals($"addtocart_{product.Id}.CustomerEnteredPrice", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        if (decimal.TryParse(form[formKey], out decimal customerEnteredPrice))
+                            customerEnteredPriceConverted = _currencyService.ConvertToPrimaryStoreCurrency(customerEnteredPrice, _workContext.WorkingCurrency);
+                        break;
+                    }
+                }
+
+                wrappedProduct.CustomerEnteredPrice = customerEnteredPriceConverted;
+            }
+
+            //quantity
+            var quantity = 1;
+            foreach (var formKey in form.Keys)
+                if (formKey.Equals($"addtocart_{product.Id}.EnteredQuantity", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    int.TryParse(form[formKey], out quantity);
+                    break;
+                }
+            wrappedProduct.Quantity = quantity;
+
+            var addToCartWarnings = new List<string>();
+
+            //product and gift card attributes
+            wrappedProduct.AttributesXml = _productAttributeParser.ParseProductAttributes(product, form, addToCartWarnings);
+
+            //rental attributes
+            if (product.IsRental)
+            {
+                _productAttributeParser.ParseRentalDates(product, form, out var rentalStartDate, out var rentalEndDate);
+                wrappedProduct.RentalStartDateUtc = rentalStartDate;
+                wrappedProduct.RentalEndDateUtc = rentalEndDate;
+            }
+
+            var modelResult = _shoppingCartModelFactory.PrepareEstimateShippingResultModel(new [] { wrappedProduct }, model.CountryId, model.StateProvinceId, model.ZipPostalCode);
+
+            return Json(modelResult);
         }
 
         #endregion
