@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Http;
@@ -33,7 +32,6 @@ using Nop.Web.Framework.Controllers;
 using Nop.Web.Framework.Mvc;
 using Nop.Web.Framework.Mvc.Filters;
 using Nop.Web.Framework.Security;
-using Nop.Web.Framework.Security.Captcha;
 using Nop.Web.Infrastructure.Cache;
 using Nop.Web.Models.Media;
 using Nop.Web.Models.ShoppingCart;
@@ -656,42 +654,19 @@ namespace Nop.Web.Controllers
                 }
             }
 
-            //customer entered price
-            var customerEnteredPriceConverted = decimal.Zero;
-            if (product.CustomerEntersPrice)
-            {
-                foreach (var formKey in form.Keys)
-                {
-                    if (formKey.Equals($"addtocart_{productId}.CustomerEnteredPrice", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        if (decimal.TryParse(form[formKey], out decimal customerEnteredPrice))
-                            customerEnteredPriceConverted = _currencyService.ConvertToPrimaryStoreCurrency(customerEnteredPrice, _workContext.WorkingCurrency);
-                        break;
-                    }
-                }
-            }
-
-            //quantity
-            var quantity = 1;
-            foreach (var formKey in form.Keys)
-                if (formKey.Equals($"addtocart_{productId}.EnteredQuantity", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    int.TryParse(form[formKey], out quantity);
-                    break;
-                }
-
             var addToCartWarnings = new List<string>();
+
+            //customer entered price
+            var customerEnteredPriceConverted = _productAttributeParser.ParseCustomerEnteredPrice(product, form);
+
+            //entered quantity
+            var quantity = _productAttributeParser.ParseEnteredQuantity(product, form);
 
             //product and gift card attributes
             var attributes = _productAttributeParser.ParseProductAttributes(product, form, addToCartWarnings);
 
             //rental attributes
-            DateTime? rentalStartDate = null;
-            DateTime? rentalEndDate = null;
-            if (product.IsRental)
-            {
-                _productAttributeParser.ParseRentalDates(product, form, out rentalStartDate, out rentalEndDate);
-            }
+            _productAttributeParser.ParseRentalDates(product, form, out var rentalStartDate, out var rentalEndDate);
 
             var cartType = updatecartitem == null ? (ShoppingCartType)shoppingCartTypeId :
                 //if the item to update is found, then we ignore the specified "shoppingCartTypeId" parameter
@@ -763,8 +738,8 @@ namespace Nop.Web.Controllers
                     ShoppingCartType.ShoppingCart,
                     1, attributeXml, 0,
                     rentalStartDate, rentalEndDate,
-                    true, out decimal _, out scDiscounts);
-                var finalPriceWithDiscountBase = _taxService.GetProductPrice(product, finalPrice, out decimal _);
+                    true, out var _, out scDiscounts);
+                var finalPriceWithDiscountBase = _taxService.GetProductPrice(product, finalPrice, out var _);
                 var finalPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithDiscountBase, _workContext.WorkingCurrency);
                 price = _priceFormatter.FormatPrice(finalPriceWithDiscount);
                 basepricepangv = _priceFormatter.FormatBasePrice(product, finalPriceWithDiscountBase, totalWeight);

@@ -872,8 +872,8 @@ namespace Nop.Plugin.Shipping.UPS.Services
                 int? transitDays = null;
                 if (rate.GuaranteedDelivery != null && !string.IsNullOrWhiteSpace(rate.GuaranteedDelivery.BusinessDaysInTransit))
                 {
-                    if (int.TryParse(rate.GuaranteedDelivery.BusinessDaysInTransit, out var bDaysInTransit))
-                        transitDays = bDaysInTransit;
+                    if (int.TryParse(rate.GuaranteedDelivery.BusinessDaysInTransit, out var businessDaysInTransit))
+                        transitDays = businessDaysInTransit;
                 }
 
                 //add shipping option based on service rate

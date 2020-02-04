@@ -6,9 +6,11 @@ using System.Linq;
 using System.Xml;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using Nop.Data;
 using Nop.Data.Extensions;
+using Nop.Services.Directory;
 using Nop.Services.Localization;
 using Nop.Services.Media;
 
@@ -19,25 +21,32 @@ namespace Nop.Services.Catalog
     /// </summary>
     public partial class ProductAttributeParser : IProductAttributeParser
     {
+
         #region Fields
 
+        private readonly ICurrencyService _currencyService;
         private readonly IDbContext _context;
         private readonly IDownloadService _downloadService;
-        private readonly IProductAttributeService _productAttributeService;
         private readonly ILocalizationService _localizationService;
+        private readonly IProductAttributeService _productAttributeService;
+        private readonly IWorkContext _workContext;
 
         #endregion
 
         #region Ctor
 
-        public ProductAttributeParser(IDbContext context,
+        public ProductAttributeParser(ICurrencyService currencyService,
+            IDbContext context,
             IDownloadService downloadService,
+            ILocalizationService localizationService,
             IProductAttributeService productAttributeService,
-            ILocalizationService localizationService)
+            IWorkContext workContext)
         {
+            _currencyService = currencyService;
             _context = context;
             _downloadService = downloadService;
             _productAttributeService = productAttributeService;
+            _workContext = workContext;
             _localizationService = localizationService;
         }
 
@@ -862,6 +871,62 @@ namespace Nop.Services.Catalog
         }
 
         /// <summary>
+        /// Parse a customer entered price of the product
+        /// </summary>
+        /// <param name="product">Product</param>
+        /// <param name="form">Form</param>
+        /// <returns>Customer entered price of the product</returns>
+        public virtual decimal ParseCustomerEnteredPrice(Product product, IFormCollection form)
+        {
+            if (product == null)
+                throw new ArgumentNullException(nameof(product));
+            if (form == null)
+                throw new ArgumentNullException(nameof(form));
+
+            var customerEnteredPriceConverted = decimal.Zero;
+            if (product.CustomerEntersPrice)
+            {
+                foreach (var formKey in form.Keys)
+                {
+                    if (formKey.Equals($"addtocart_{product.Id}.CustomerEnteredPrice", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        if (decimal.TryParse(form[formKey], out var customerEnteredPrice))
+                            customerEnteredPriceConverted = _currencyService.ConvertToPrimaryStoreCurrency(customerEnteredPrice, _workContext.WorkingCurrency);
+                        break;
+                    }
+                }
+            }
+
+            return customerEnteredPriceConverted;
+        }
+
+        /// <summary>
+        /// Parse a entered quantity of the product
+        /// </summary>
+        /// <param name="product">Product</param>
+        /// <param name="form">Form</param>
+        /// <returns>Customer entered price of the product</returns>
+        public virtual int ParseEnteredQuantity(Product product, IFormCollection form)
+        {
+            if (product == null)
+                throw new ArgumentNullException(nameof(product));
+            if (form == null)
+                throw new ArgumentNullException(nameof(form));
+
+            var quantity = 1;
+            foreach (var formKey in form.Keys)
+            {
+                if (formKey.Equals($"addtocart_{product.Id}.EnteredQuantity", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    int.TryParse(form[formKey], out quantity);
+                    break;
+                }
+            }
+
+            return quantity;
+        }
+
+        /// <summary>
         /// Parse product rental dates on the product details page
         /// </summary>
         /// <param name="product">Product</param>
@@ -870,22 +935,30 @@ namespace Nop.Services.Catalog
         /// <param name="endDate">End date</param>
         public virtual void ParseRentalDates(Product product, IFormCollection form, out DateTime? startDate, out DateTime? endDate)
         {
+            if (product == null)
+                throw new ArgumentNullException(nameof(product));
+            if (form == null)
+                throw new ArgumentNullException(nameof(form));
+
             startDate = null;
             endDate = null;
 
-            var startControlId = $"rental_start_date_{product.Id}";
-            var endControlId = $"rental_end_date_{product.Id}";
-            var ctrlStartDate = form[startControlId];
-            var ctrlEndDate = form[endControlId];
-            try
+            if (product.IsRental)
             {
-                //currently we support only this format (as in the \Views\Product\_RentalInfo.cshtml file)
-                const string datePickerFormat = "MM/dd/yyyy";
-                startDate = DateTime.ParseExact(ctrlStartDate, datePickerFormat, CultureInfo.InvariantCulture);
-                endDate = DateTime.ParseExact(ctrlEndDate, datePickerFormat, CultureInfo.InvariantCulture);
-            }
-            catch
-            {
+                var startControlId = $"rental_start_date_{product.Id}";
+                var endControlId = $"rental_end_date_{product.Id}";
+                var ctrlStartDate = form[startControlId];
+                var ctrlEndDate = form[endControlId];
+                try
+                {
+                    //currently we support only this format (as in the \Views\Product\_RentalInfo.cshtml file)
+                    const string datePickerFormat = "d";
+                    startDate = DateTime.ParseExact(ctrlStartDate, datePickerFormat, CultureInfo.InvariantCulture);
+                    endDate = DateTime.ParseExact(ctrlEndDate, datePickerFormat, CultureInfo.InvariantCulture);
+                }
+                catch
+                {
+                }
             }
         }
 
@@ -898,6 +971,8 @@ namespace Nop.Services.Catalog
         /// <returns>Attributes in XML format</returns>
         public virtual string ParseProductAttributes(Product product, IFormCollection form, List<string> errors)
         {
+            if (product == null)
+                throw new ArgumentNullException(nameof(product));
             if (form == null)
                 throw new ArgumentNullException(nameof(form));
 

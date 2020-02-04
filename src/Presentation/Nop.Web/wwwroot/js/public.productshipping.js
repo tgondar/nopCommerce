@@ -4,9 +4,11 @@
     fetchUrl: false,
     loadWaiting: false,
     localizedData: false,
+    productId: false,
     selectedShippingOption: 'not_init',
 
-    init: function (form, fetchUrl, localizedData) {
+    init: function (productId, form, fetchUrl, localizedData) {
+        this.productId = productId;
         this.form = form;
         this.fetchUrl = fetchUrl;
         this.localizedData = localizedData;
@@ -89,10 +91,10 @@
     setLoadWaiting: function (keepDisabled) {
         this.loadWaiting = keepDisabled;
         if (keepDisabled) {
-            $('#shipping-methods-body').html($('<div/>', { class: 'shipping-methods-loading' }));
+            $('#shipping-methods-body').html($('<div/>').addClass('shipping-methods-loading'));
 
             if (!$.magnificPopup.instance.isOpen) {
-                $('#shipping-price-rate').html($('<span/>', { class: 'selected-shipping-loading' }))
+                $('#shipping-price-rate').html($('<span/>').addClass('selected-shipping-loading'));
                 $('#open-shipping-options').empty();
                 $('#estimated-delivery').empty();
             }
@@ -102,8 +104,7 @@
     getShippingOptions: function (address, force) {
         if (!force && this.loadWaiting) return;
 
-        let productId = $('#ProductId').val();
-        if (productId && productId > 0 && this.addressIsValid(address)) {
+        if (this.productId && this.productId > 0 && this.addressIsValid(address)) {
             this.setLoadWaiting(true);
 
             $('.message-failure').empty();
@@ -113,7 +114,7 @@
             }
 
             let params = $.param({
-                ProductId: productId,
+                ProductId: this.productId,
                 CountryId: address.countryId,
                 StateProvinceId: address.stateProvinceId,
                 ZipPostalCode: address.zipPostalCode
@@ -205,7 +206,7 @@
     },
 
     clearShippingOptions: function () {
-        $('#shipping-methods-body').html($('<div/>', { class: 'no-shipping-options' }).text(this.localizedData.NoShippingOptions));
+        $('#shipping-methods-body').html($('<div/>').addClass('no-shipping-options').text(this.localizedData.NoShippingOptions));
     },
 
     selectShippingOption: function (option) {
@@ -216,7 +217,7 @@
             $('#selected-shipping-option').show();
             $('#open-shipping-options')
                 .html($('<span/>').text(`${this.localizedData.ToAddress} ${option.address.countryName}, ${(option.address.stateProvinceName ? option.address.stateProvinceName + ',' : '')} ${option.address.zipPostalCode} ${this.localizedData.ViaProvider} ${option.provider}`))
-                .append($('<i/>', { class: 'arrow-down' }));
+                .append($('<i/>').addClass('arrow-down'));
 
             if (option.deliveryDate && option.deliveryDate !== '-') {
                 $('#estimated-delivery').text(`${this.localizedData.EstimatedDeliveryPrefix} ${option.deliveryDate}`);
@@ -230,7 +231,7 @@
             $('#selected-shipping-option').hide();
             $('#open-shipping-options')
                 .html($('<span/>').text(this.localizedData.NoSelectedShippingOption))
-                .append($('<i/>', { class: 'arrow-down' }));
+                .append($('<i/>').addClass('arrow-down'));
             $('#estimated-delivery').empty();
         }
     },
@@ -238,15 +239,15 @@
     addShippingOption: function (name, deliveryDate, price) {
         if (!name || !price) return;
 
-        let shippingMethod = $('<div/>', { class: 'estimate-shipping-row shipping-method' });
+        let shippingMethod = $('<div/>').addClass('estimate-shipping-row shipping-method');
 
         shippingMethod
-            .append($('<div/>', { class: 'estimate-shipping-row-item-radio' })
-                .append($('<input/>', { type: 'radio', name: 'shipping-option', class: 'estimate-shipping-radio' }))
+            .append($('<div/>').addClass('estimate-shipping-row-item-radio')
+                .append($('<input/>').addClass('estimate-shipping-radio').attr({ 'type': 'radio', 'name': 'shipping-option' }))
                 .append($('<label/>')))
-            .append($('<div/>', { class: 'estimate-shipping-row-item shipping-item' }).text(name))
-            .append($('<div/>', { class: 'estimate-shipping-row-item shipping-item' }).text(deliveryDate ? deliveryDate : '-'))
-            .append($('<div/>', { class: 'estimate-shipping-row-item shipping-item' }).text(price));
+            .append($('<div/>').addClass('estimate-shipping-row-item shipping-item').text(name))
+            .append($('<div/>').addClass('estimate-shipping-row-item shipping-item').text(deliveryDate ? deliveryDate : '-'))
+            .append($('<div/>').addClass('estimate-shipping-row-item shipping-item').text(price));
 
         shippingMethod.on('click', function () {
             $('input[name="shipping-option"]', this).prop('checked', true);
@@ -276,7 +277,7 @@
             let shippingItems = $('.shipping-item', shippingMethod);
             let provider = shippingItems.eq(0).text().trim();
             let price = shippingItems.eq(2).text().trim();
-            if (provider == option.provider && price == option.price) {
+            if (provider === option.provider && price === option.price) {
                 $(shippingMethod).trigger('click');
                 return;
             }

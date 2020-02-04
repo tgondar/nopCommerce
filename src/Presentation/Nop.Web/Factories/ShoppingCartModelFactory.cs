@@ -1324,7 +1324,7 @@ namespace Nop.Web.Factories
                             {
                                 var currentCulture = CultureInfo.GetCultureInfo(_workContext.WorkingLanguage.LanguageCulture);
                                 var customerDateTime = _dateTimeHelper.ConvertToUserTime(DateTime.Now);
-                                deliveryDateFormat = customerDateTime.AddDays(option.TransitDays.Value).ToString("m", currentCulture);
+                                deliveryDateFormat = customerDateTime.AddDays(option.TransitDays.Value).ToString("d", currentCulture);
                             }
 
                             return new EstimateShippingResultModel.ShippingOptionModel()

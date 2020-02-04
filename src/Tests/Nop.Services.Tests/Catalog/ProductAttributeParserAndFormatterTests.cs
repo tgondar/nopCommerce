@@ -227,10 +227,12 @@ namespace Nop.Services.Tests.Catalog
             _webHelper = new Mock<IWebHelper>();
             _shoppingCartSettings = new ShoppingCartSettings();
 
-            _productAttributeParser = new ProductAttributeParser(_context.Object, 
-                _downloadService.Object, 
+            _productAttributeParser = new ProductAttributeParser(_currencyService.Object,
+                _context.Object,
+                _downloadService.Object,
+                _localizationService,
                 _productAttributeService,
-                _localizationService);
+                _workContext.Object);
 
             _productAttributeFormatter = new ProductAttributeFormatter(_currencyService.Object,
                 _downloadService.Object,

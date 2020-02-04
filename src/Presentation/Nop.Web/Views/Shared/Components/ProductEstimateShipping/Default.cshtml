@@ -9,7 +9,7 @@
     </div>
     <a href="#shipping-options-popup" id="open-shipping-options" data-effect="product-estimate-shipping-zoom-in"></a>
     <div id="estimated-delivery"></div>
-    <input type="hidden" asp-for="ProductId" />
+
     <div id="shipping-options-popup" class="white-popup mfp-with-anim mfp-hide">
         <div class="ship-to-title">
             <strong>@T("Products.EstimateShipping.ShipToTitle")</strong>
@@ -91,7 +91,7 @@
             ToAddress: '@T("Products.EstimateShipping.ToAddress")',
             ViaProvider: '@T("Products.EstimateShipping.ViaProvider")'
         };
-        ProductShipping.init('#product-details-form', '@Html.Raw(Url.Action("estimateshipping", "product"))', localizedData);
+        ProductShipping.init(@Model.ProductId, '#product-details-form', '@Html.Raw(Url.Action("estimateshipping", "product"))', localizedData);
     });
 
 </script>

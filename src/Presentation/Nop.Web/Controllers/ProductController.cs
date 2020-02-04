@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
 using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Customers;
@@ -14,11 +11,9 @@ using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Security;
 using Nop.Core.Rss;
 using Nop.Services.Catalog;
-using Nop.Services.Directory;
 using Nop.Services.Events;
 using Nop.Services.Localization;
 using Nop.Services.Logging;
-using Nop.Services.Media;
 using Nop.Services.Messages;
 using Nop.Services.Orders;
 using Nop.Services.Security;
@@ -30,7 +25,6 @@ using Nop.Web.Framework.Controllers;
 using Nop.Web.Framework.Mvc;
 using Nop.Web.Framework.Mvc.Filters;
 using Nop.Web.Framework.Security;
-using Nop.Web.Framework.Security.Captcha;
 using Nop.Web.Models.Catalog;
 
 namespace Nop.Web.Controllers
@@ -43,15 +37,12 @@ namespace Nop.Web.Controllers
         private readonly CatalogSettings _catalogSettings;
         private readonly IAclService _aclService;
         private readonly ICompareProductsService _compareProductsService;
-        private readonly ICurrencyService _currencyService;
         private readonly ICustomerActivityService _customerActivityService;
-        private readonly IDownloadService _downloadService;
         private readonly IEventPublisher _eventPublisher;
         private readonly ILocalizationService _localizationService;
         private readonly IOrderService _orderService;
         private readonly IPermissionService _permissionService;
         private readonly IProductAttributeParser _productAttributeParser;
-        private readonly IProductAttributeService _productAttributeService;
         private readonly IProductModelFactory _productModelFactory;
         private readonly IProductService _productService;
         private readonly IRecentlyViewedProductsService _recentlyViewedProductsService;
@@ -74,15 +65,12 @@ namespace Nop.Web.Controllers
             CatalogSettings catalogSettings,
             IAclService aclService,
             ICompareProductsService compareProductsService,
-            ICurrencyService currencyService,
             ICustomerActivityService customerActivityService,
-            IDownloadService downloadService,
             IEventPublisher eventPublisher,
             ILocalizationService localizationService,
             IOrderService orderService,
             IPermissionService permissionService,
             IProductAttributeParser productAttributeParser,
-            IProductAttributeService productAttributeService,
             IProductModelFactory productModelFactory,
             IProductService productService,
             IRecentlyViewedProductsService recentlyViewedProductsService,
@@ -101,15 +89,12 @@ namespace Nop.Web.Controllers
             _catalogSettings = catalogSettings;
             _aclService = aclService;
             _compareProductsService = compareProductsService;
-            _currencyService = currencyService;
             _customerActivityService = customerActivityService;
-            _downloadService = downloadService;
             _eventPublisher = eventPublisher;
             _localizationService = localizationService;
             _orderService = orderService;
             _permissionService = permissionService;
             _productAttributeParser = productAttributeParser;
-            _productAttributeService = productAttributeService;
             _productModelFactory = productModelFactory;
             _productService = productService;
             _recentlyViewedProductsService = recentlyViewedProductsService;
@@ -239,46 +224,21 @@ namespace Nop.Web.Controllers
                 CreatedOnUtc = DateTime.UtcNow
             };
 
-            //customer entered price
-            if (product.CustomerEntersPrice)
-            {
-                var customerEnteredPriceConverted = decimal.Zero;
-
-                foreach (var formKey in form.Keys)
-                {
-                    if (formKey.Equals($"addtocart_{product.Id}.CustomerEnteredPrice", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        if (decimal.TryParse(form[formKey], out decimal customerEnteredPrice))
-                            customerEnteredPriceConverted = _currencyService.ConvertToPrimaryStoreCurrency(customerEnteredPrice, _workContext.WorkingCurrency);
-                        break;
-                    }
-                }
-
-                wrappedProduct.CustomerEnteredPrice = customerEnteredPriceConverted;
-            }
-
-            //quantity
-            var quantity = 1;
-            foreach (var formKey in form.Keys)
-                if (formKey.Equals($"addtocart_{product.Id}.EnteredQuantity", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    int.TryParse(form[formKey], out quantity);
-                    break;
-                }
-            wrappedProduct.Quantity = quantity;
-
             var addToCartWarnings = new List<string>();
+
+            //customer entered price
+            wrappedProduct.CustomerEnteredPrice = _productAttributeParser.ParseCustomerEnteredPrice(product, form);
+
+            //entered quantity
+            wrappedProduct.Quantity = _productAttributeParser.ParseEnteredQuantity(product, form);
 
             //product and gift card attributes
             wrappedProduct.AttributesXml = _productAttributeParser.ParseProductAttributes(product, form, addToCartWarnings);
 
             //rental attributes
-            if (product.IsRental)
-            {
-                _productAttributeParser.ParseRentalDates(product, form, out var rentalStartDate, out var rentalEndDate);
-                wrappedProduct.RentalStartDateUtc = rentalStartDate;
-                wrappedProduct.RentalEndDateUtc = rentalEndDate;
-            }
+            _productAttributeParser.ParseRentalDates(product, form, out var rentalStartDate, out var rentalEndDate);
+            wrappedProduct.RentalStartDateUtc = rentalStartDate;
+            wrappedProduct.RentalEndDateUtc = rentalEndDate;
 
             var modelResult = _shoppingCartModelFactory.PrepareEstimateShippingResultModel(new [] { wrappedProduct }, model.CountryId, model.StateProvinceId, model.ZipPostalCode);
 
