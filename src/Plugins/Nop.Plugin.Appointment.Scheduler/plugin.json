@@ -1,0 +1,11 @@
+{
+  "Group": "Appointments",
+  "FriendlyName": "Appointment Scheduler",
+  "SystemName": "Appointment.Scheduler",
+  "Version": "1.0",
+  "SupportedVersions": [ "4.20" ],
+  "Author": "tekdrop",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Appointment.Scheduler.dll",
+  "Description": "This plugin allows the appointment and scheduling of what ever you would like. Just need to set the 2 roles for levels of permissions"
+}
