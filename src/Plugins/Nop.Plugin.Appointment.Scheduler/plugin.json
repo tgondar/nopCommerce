@@ -1,9 +1,9 @@
 {
-  "Group": "Appointments",
+  "Group": "Misc",
   "FriendlyName": "Appointment Scheduler",
   "SystemName": "Appointment.Scheduler",
   "Version": "1.0",
-  "SupportedVersions": [ "4.20" ],
+  "SupportedVersions": [ "4.30" ],
   "Author": "tekdrop",
   "DisplayOrder": 1,
   "FileName": "Nop.Plugin.Appointment.Scheduler.dll",

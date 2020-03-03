@@ -61,7 +61,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.Plugin.Misc.SendinBlue"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.Plugin.Tax.Avalara", "Plugins\Nop.Plugin.Tax.Avalara\Nop.Plugin.Tax.Avalara.csproj", "{2426B75D-23D4-41EF-8924-47650C8A18C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nop.Plugin.Appointment.Scheduler", "Plugins\Nop.Plugin.Appointment.Scheduler\Nop.Plugin.Appointment.Scheduler.csproj", "{6D292917-E3A1-40DD-A238-39474A8BF794}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.Plugin.Appointment.Scheduler", "Plugins\Nop.Plugin.Appointment.Scheduler\Nop.Plugin.Appointment.Scheduler.csproj", "{6D292917-E3A1-40DD-A238-39474A8BF794}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

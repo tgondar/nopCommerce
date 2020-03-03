@@ -3,23 +3,33 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <Copyright>SOME_COPYRIGHT</Copyright>
     <Company>tekdrop</Company>
-    <Authors>telmo gondar, nuno mendes</Authors>
+    <Authors>nuno mendes, telmo gondar</Authors>
     <PackageLicenseUrl>PACKAGE_LICENSE_URL</PackageLicenseUrl>
     <PackageProjectUrl>PACKAGE_PROJECT_URL</PackageProjectUrl>
-    <RepositoryUrl>REPOSITORY_URL</RepositoryUrl>
+    <RepositoryUrl>https://github.com/tgondar/nopCommerce</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <OutputPath>..\..\Presentation\Nop.Web\Plugins\Appointment.Scheduler</OutputPath>
     <OutDir>$(OutputPath)</OutDir>
     <!--Set this parameter to true to get the dlls copied from the NuGet cache to the output of your    project. You need to set this parameter to true if your plugin has a nuget package to ensure that   the dlls copied from the NuGet cache to the output of your project-->
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="plugin.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="plugin.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Presentation\Nop.Web.Framework\Nop.Web.Framework.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="plugin.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <Folder Include="Infrastructure\" />
+    <Folder Include="Controllers\" />
+    <Folder Include="Models\" />
+    <Folder Include="Views\" />
+    <Folder Include="Services\" />
   </ItemGroup>
   <!-- This target execute after "Build" target -->
   <Target Name="NopTarget" AfterTargets="Build">
