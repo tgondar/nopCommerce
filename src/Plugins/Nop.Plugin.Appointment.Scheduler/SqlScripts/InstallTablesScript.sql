@@ -6,7 +6,7 @@ BEGIN
 
 	CREATE TABLE dbo.TekAppointment
 	(
-		Id INT,
+		Id INT IDENTITY,
 		[Date] DATETIME NOT NULL,
 		Observation NVARCHAR(MAX),
 		CustomerId INT NOT NULL,
