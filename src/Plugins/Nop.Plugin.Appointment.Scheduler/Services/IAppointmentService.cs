@@ -1,10 +1,11 @@
-﻿using Nop.Core;
-using Nop.Plugin.Appointment.Scheduler.Models;
+﻿using System;
+using Nop.Core;
+using Nop.Plugin.Appointment.Scheduler.Domain;
 
 namespace Nop.Plugin.Appointment.Scheduler.Services
 {
     public interface IAppointmentService
     {
-        IPagedList<AppointmentModel> GetAll(int pageIndex = 0, int pageSize = int.MaxValue);
+        IPagedList<TekAppointment> GetAll(DateTime? startDate, DateTime? endDate, int pageIndex = 0, int pageSize = int.MaxValue);
     }
 }

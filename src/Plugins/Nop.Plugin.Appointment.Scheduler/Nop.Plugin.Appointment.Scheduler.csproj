@@ -19,6 +19,7 @@
     <None Remove="SqlScripts\InstallTablesScript.sql" />
     <None Remove="SqlScripts\UninstallScript.sql" />
     <None Remove="Views\Appointment\List.cshtml" />
+    <None Remove="Views\_ViewImports.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="plugin.json">
@@ -33,12 +34,14 @@
     <Content Include="Views\Appointment\List.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\_ViewImports.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Presentation\Nop.Web.Framework\Nop.Web.Framework.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Infrastructure\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SqlScripts\InstallTablesScript.sql">

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Autofac;
-using Autofac.Core;
+﻿using Autofac;
 using Nop.Core.Configuration;
 using Nop.Core.Infrastructure;
 using Nop.Core.Infrastructure.DependencyManagement;
-using Nop.Data;
-using Nop.Plugin.Appointment.Scheduler.Domain;
+using Nop.Plugin.Appointment.Scheduler.Factories;
 using Nop.Plugin.Appointment.Scheduler.Services;
 
 namespace Nop.Plugin.Appointment.Scheduler
@@ -17,6 +12,9 @@ namespace Nop.Plugin.Appointment.Scheduler
         public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, NopConfig config)
         {
             builder.RegisterType<AppointmentService>().As<IAppointmentService>().InstancePerLifetimeScope();
+
+            //register custom factories
+            builder.RegisterType<AppointmentModelFactory>().As<IAppointmentModelFactory>().InstancePerLifetimeScope();
         }
 
         public int Order

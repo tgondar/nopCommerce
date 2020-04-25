@@ -22,13 +22,13 @@ namespace Nop.Plugin.Appointment.Scheduler.Models
         public bool Deleted { get; set; }
 
         [NopResourceDisplayName("Plugins.Appointment.Scheduler.CreatedOnUtc")]
-        public DateTime CreatedOnUtc { get; set; }
+        public DateTime? CreatedOn { get; set; }
 
         [NopResourceDisplayName("Plugins.Appointment.Scheduler.CreatedBy")]
         public string CreatedBy { get; set; }
 
         [NopResourceDisplayName("Plugins.Appointment.Scheduler.UpdatedOnUtc")]
-        public DateTime UpdatedOnUtc { get; set; }
+        public DateTime UpdatedOn { get; set; }
 
         [NopResourceDisplayName("Plugins.Appointment.Scheduler.UpdatedBy")]
         public string UpdatedBy { get; set; }
