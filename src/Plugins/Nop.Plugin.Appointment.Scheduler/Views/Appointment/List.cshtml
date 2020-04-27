@@ -11,32 +11,6 @@
     Html.SetActiveMenuItemSystemName("Appointment Scheduler");
 }
 
-@*<table>
-    <thead>
-        <tr>
-            <th>Data</th>
-            <th>Obs</th>
-            <th>Cliente</th>
-            <th>Especialista</th>
-            <th>Alteração</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Date</td>
-                <td>@item.Observation</td>
-                <td>@item.CustomerUsername</td>
-                <td>@item.SpecialistUsername</td>
-                <td>@item.UpdatedOnUtc<br />@item.UpdatedBy</td>
-            </tr>
-        }
-    </tbody>
-</table>*@
-
-
-
 <form asp-controller="Appointment" asp-action="List" method="post">
     <div class="content-header clearfix">
         <h1 class="pull-left">
@@ -130,38 +104,38 @@
                                 },
                                 new ColumnProperty(nameof(AppointmentModel.Id))
                                 {
-                                    Title = T("Admin.System.QueuedEmails.Fields.Id").Text,
+                                    Title = T("Plugins.Appointment.Scheduler.Id").Text,
                                     Width = "50",
                                 },
                                 new ColumnProperty(nameof(AppointmentModel.Date))
                                 {
-                                    Title = T("Admin.System.QueuedEmails.Fields.Subject").Text
+                                    Title = T("Plugins.Appointment.Scheduler.Date").Text
                                 },
                                 new ColumnProperty(nameof(AppointmentModel.SpecialistUsername))
                                 {
-                                    Title = T("Admin.System.QueuedEmails.Fields.To").Text,
+                                    Title = T("Plugins.Appointment.Scheduler.SpecialistUsername").Text,
                                     Width = "100",
                                 },
                                 new ColumnProperty(nameof(AppointmentModel.CustomerUsername))
                                 {
-                                    Title = T("Admin.System.QueuedEmails.Fields.From").Text,
+                                    Title = T("Plugins.Appointment.Scheduler.CustomerUsername").Text,
                                     Width = "100",
                                 },
                                 new ColumnProperty(nameof(AppointmentModel.UpdatedOn))
                                 {
-                                    Title = T("Admin.System.QueuedEmails.Fields.CreatedOn").Text,
+                                    Title = T("Plugins.Appointment.Scheduler.UpdatedOn").Text,
                                     Width = "150",
                                     Render = new RenderDate()
                                 },
                                 new ColumnProperty(nameof(AppointmentModel.UpdatedBy))
                                 {
-                                    Title = T("Admin.System.QueuedEmails.Fields.CreatedOn").Text,
+                                    Title = T("Plugins.Appointment.Scheduler.UpdatedBy").Text,
                                     Width = "150",
                                     Render = new RenderDate()
                                 },
                                 new ColumnProperty(nameof(AppointmentModel.Id))
                                 {
-                                    Title = T("Admin.Common.Edit").Text,
+                                    Title = T("Plugins.Appointment.Scheduler.EditButton").Text,
                                     Width = "50",
                                     ClassName =  NopColumnClassDefaults.Button,
                                     Render = new RenderButtonEdit(new DataUrl("Edit"))

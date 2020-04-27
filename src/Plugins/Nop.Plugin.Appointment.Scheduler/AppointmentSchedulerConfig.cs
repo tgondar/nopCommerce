@@ -101,14 +101,18 @@ namespace Nop.Plugin.Appointment.Scheduler
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.CustomerUsername", "Cliente");
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.SpecialistUsername", "Especialista");
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.Deleted", "Apagado");
-            _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.CreatedOnUtc", "Data Criação");
+            _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.CreatedOn", "Data Criação");
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.CreatedBy", "Utilizador Criação");
-            _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.UpdatedOnUtc", "Data Alteração");
+            _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.UpdatedOn", "Data Alteração");
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.UpdatedBy", "Utilizador Alteração");
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.SaveButton", "Gravar");
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.CreateButton", "Gravar");
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.DeleteButton", "Apagar");
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.SearchButton", "Pesquisar");
+            _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.EditButton", "Editar");
+
+            _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.StartDate", "Data Início");
+            _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.EndDateDate", "Data Fim");
 
             base.Install();
         }
@@ -136,14 +140,18 @@ namespace Nop.Plugin.Appointment.Scheduler
             _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.CustomerUsername");
             _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.SpecialistUsername");
             _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.Deleted");
-            _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.CreatedOnUtc");
+            _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.CreatedOn");
             _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.CreatedBy");
-            _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.UpdatedOnUtc");
+            _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.UpdatedOn");
             _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.UpdatedBy");
             _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.SaveButton");
             _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.CreateButton");
             _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.DeleteButton");
             _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.SearchButton");
+            _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.EditButton", "Editar");
+
+            _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.StartDate", "Data Início");
+            _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.EndDateDate", "Data Fim");
 
             //TODO: 
 
