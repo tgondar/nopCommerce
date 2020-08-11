@@ -1,0 +1,28 @@
+@model AppointmentModel
+
+@{
+    //page title
+    ViewBag.PageTitle = T("Plugins.Appointment.Scheduler.EditAppointmentTitle").Text;
+    //active menu item (system name)
+    Html.SetActiveMenuItemSystemName("Queued emails");
+}
+
+<form asp-controller="Appointment" asp-action="Edit" method="post">
+    <div class="content-header clearfix">
+        <h1 class="pull-left">
+            @T("Admin.Common.Edit")
+        </h1>
+        <div class="pull-right">
+            <button type="submit" name="save" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="form-horizontal">
+            @await Html.PartialAsync("~/Plugins/Appointment.Scheduler/Views/Appointment/_CreateOrUpdate.cshtml", Model)
+        </div>
+    </div>
+</form>

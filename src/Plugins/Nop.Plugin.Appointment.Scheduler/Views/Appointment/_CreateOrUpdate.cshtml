@@ -1,0 +1,60 @@
+@model AppointmentModel
+
+<div asp-validation-summary="All"></div>
+<input asp-for="Id" type="hidden" />
+
+<div class="content">
+    <div class="form-horizontal">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-body">
+
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="Date" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="Date" asp-required="true" />
+                            <span asp-validation-for="Date"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="SpecialistUsername" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="SpecialistUsername" asp-required="true" />
+                            <span asp-validation-for="SpecialistUsername"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="CustomerUsername" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="CustomerUsername" />
+                            <span asp-validation-for="CustomerUsername"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="Observation" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="Observation" asp-required="true" />
+                            <span asp-validation-for="Observation"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="CreatedOn" />
+                        </div>
+                        <div class="col-md-9">
+                            <div class="form-text-row">@Model.CreatedOn</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

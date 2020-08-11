@@ -18,7 +18,10 @@
     <None Remove="SqlScripts\InstallInsertScript.sql" />
     <None Remove="SqlScripts\InstallTablesScript.sql" />
     <None Remove="SqlScripts\UninstallScript.sql" />
+    <None Remove="Views\Appointment\Create.cshtml" />
+    <None Remove="Views\Appointment\Edit.cshtml" />
     <None Remove="Views\Appointment\List.cshtml" />
+    <None Remove="Views\Appointment\_CreateOrUpdate.cshtml" />
     <None Remove="Views\_ViewImports.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -31,7 +34,22 @@
     <Content Include="SqlScripts\InstallInsertScript.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\Appointment\Create.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Appointment\Edit.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Views\Appointment\List.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Appointment\_CreateOrUpdate.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\_ViewImports.cshtml">

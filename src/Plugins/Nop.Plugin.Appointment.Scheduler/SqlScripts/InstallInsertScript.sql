@@ -22,3 +22,25 @@ BEGIN
 	UPDATE CustomerRole SET Active = 1 WHERE SystemName = 'tekassistant'
 END
 
+
+
+IF ((SELECT COUNT(*) FROM LocaleStringResource WHERE ResourceName = 'Plugins.Appointment.Scheduler.SpecialistUsername') = 0)
+BEGIN
+	INSERT INTO LocaleStringResource VALUES ('Especialista','Plugins.Appointment.Scheduler.SpecialistUsername',1)
+END
+
+IF ((SELECT COUNT(*) FROM LocaleStringResource WHERE ResourceName = 'Plugins.Appointment.Scheduler.CustomerUsername') = 0)
+BEGIN
+	INSERT INTO LocaleStringResource VALUES ('Cliente','Plugins.Appointment.Scheduler.CustomerUsername',1)
+END
+
+IF ((SELECT COUNT(*) FROM LocaleStringResource WHERE ResourceName = 'Plugins.Appointment.Scheduler.Date') = 0)
+BEGIN
+	INSERT INTO LocaleStringResource VALUES ('Data/Hora','Plugins.Appointment.Scheduler.Date',1)
+END
+
+IF ((SELECT COUNT(*) FROM LocaleStringResource WHERE ResourceName = 'Plugins.Appointment.Scheduler.Id') = 0)
+BEGIN
+	INSERT INTO LocaleStringResource VALUES ('#','Plugins.Appointment.Scheduler.Id',1)
+END
+

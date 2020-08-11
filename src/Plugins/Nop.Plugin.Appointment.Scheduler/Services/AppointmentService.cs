@@ -4,21 +4,25 @@ using Nop.Core;
 using Nop.Core.Domain.Customers;
 using Nop.Data;
 using Nop.Plugin.Appointment.Scheduler.Domain;
+using Nop.Services.Events;
 
 namespace Nop.Plugin.Appointment.Scheduler.Services
 {
-    public partial class AppointmentService : IAppointmentService
+    sealed partial class AppointmentService : IAppointmentService
     {
         private readonly IRepository<TekAppointment> _appointmentRepository;
         private readonly IRepository<Customer> _customerRepository;
+        private readonly IEventPublisher _eventPublisher;
 
         public AppointmentService(
-            IRepository<TekAppointment> appointmentRepository,
-            IRepository<Customer> customerRepository
+            IRepository<TekAppointment> appointmentRepository
+            , IRepository<Customer> customerRepository
+            , IEventPublisher eventPublisher
             )
         {
             _appointmentRepository = appointmentRepository;
             _customerRepository = customerRepository;
+            _eventPublisher = eventPublisher;
         }
 
         public IPagedList<TekAppointment> GetAll(DateTime? startDate, DateTime? endDate, int pageIndex = 0, int pageSize = int.MaxValue)
@@ -60,5 +64,17 @@ namespace Nop.Plugin.Appointment.Scheduler.Services
 
             return records;
         }
+
+        public void Insert(TekAppointment appointment)
+        {
+            if (appointment == null)
+                throw new ArgumentNullException(nameof(appointment));
+
+            _appointmentRepository.Insert(appointment);
+
+            //event notification
+            _eventPublisher.EntityInserted(appointment);
+        }
+
     }
 }

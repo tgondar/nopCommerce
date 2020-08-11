@@ -113,6 +113,8 @@ namespace Nop.Plugin.Appointment.Scheduler
 
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.StartDate", "Data Início");
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.EndDateDate", "Data Fim");
+            _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.EditAppointmentTitle", "Editar Marcação");
+            _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.Added", "Marcação adicionada com successo.");
 
             base.Install();
         }
@@ -148,10 +150,10 @@ namespace Nop.Plugin.Appointment.Scheduler
             _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.CreateButton");
             _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.DeleteButton");
             _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.SearchButton");
-            _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.EditButton", "Editar");
+            _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.EditButton");
 
-            _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.StartDate", "Data Início");
-            _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Appointment.Scheduler.EndDateDate", "Data Fim");
+            _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.StartDate");
+            _localizationService.DeletePluginLocaleResource("Plugins.Appointment.Scheduler.EndDateDate");
 
             //TODO: 
 

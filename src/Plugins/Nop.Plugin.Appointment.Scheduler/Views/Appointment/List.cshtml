@@ -1,7 +1,5 @@
 ﻿@model Nop.Plugin.Appointment.Scheduler.Models.AppointmentSearchModel
 
-@using Nop.Web.Framework.Models.DataTables; 
-
 @{
     Layout = "_AdminLayout";
 
@@ -9,6 +7,9 @@
     //ViewBag.PageTitle = T("Admin.Catalog.Products.EditProductDetails").Text;
     //active menu item (system name)
     Html.SetActiveMenuItemSystemName("Appointment Scheduler");
+
+    const string hideSearchBlockAttributeName = "QueuedEmailsPage.HideSearchBlock";
+    var hideSearchBlock = genericAttributeService.GetAttribute<bool>(workContext.CurrentCustomer, hideSearchBlockAttributeName);
 }
 
 <form asp-controller="Appointment" asp-action="List" method="post">
@@ -17,17 +18,11 @@
             @T("Admin.System.QueuedEmails")
         </h1>
         <div class="pull-right">
-            <button type="button" id="delete-selected" class="btn bg-red">
-                <i class="fa fa-trash-o"></i>
-                @T("Admin.System.QueuedEmails.DeleteSelected")
-            </button>
-            <nop-action-confirmation asp-button-id="delete-selected" />
-            <button type="button" id="delete-all" name="delete-all" class="btn bg-red">
-                <i class="fa fa-trash-o"></i>
-                @T("Admin.System.QueuedEmails.DeleteAll")
-            </button>
-            <nop-action-confirmation asp-button-id="delete-all" />
-            @await Component.InvokeAsync("AdminWidget", new { widgetZone = AdminWidgetZones.QueuedEmailListButtons })
+            <a asp-action="Create" class="btn bg-blue">
+                <i class="fa fa-plus-square"></i>
+                @T("Admin.Common.AddNew")
+            </a>
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = AdminWidgetZones.PollListButtons })
         </div>
     </div>
 
@@ -109,7 +104,8 @@
                                 },
                                 new ColumnProperty(nameof(AppointmentModel.Date))
                                 {
-                                    Title = T("Plugins.Appointment.Scheduler.Date").Text
+                                    Title = T("Plugins.Appointment.Scheduler.Date").Text,
+                                    Render = new RenderDate()
                                 },
                                 new ColumnProperty(nameof(AppointmentModel.SpecialistUsername))
                                 {
@@ -131,7 +127,6 @@
                                 {
                                     Title = T("Plugins.Appointment.Scheduler.UpdatedBy").Text,
                                     Width = "150",
-                                    Render = new RenderDate()
                                 },
                                 new ColumnProperty(nameof(AppointmentModel.Id))
                                 {
@@ -144,39 +139,39 @@
                         })
 
                         @*<script>
-                            $(document).ready(function() {
-                                $("#@Html.IdFor(model => model.GoDirectlyToNumber)").keydown(function (event) {
-                                    if (event.keyCode === 13) {
-                                        $("#go-to-email-by-number").click();
-                                        return false;
-                                    }
-                                });
-
-                                //"delete selected" button
-                                $("#delete-selected-action-confirmation-submit-button").bind("click", function () {
-                                    var postData = {
-                                        selectedIds: selectedIds
-                                    };
-                                    addAntiForgeryToken(postData);
-                                    $.ajax({
-                                        cache: false,
-                                        type: "POST",
-                                        url: "@(Url.Action("DeleteSelected", "QueuedEmail"))",
-                                        data: postData,
-                                        traditional: true,
-                                        error: function (jqXHR, textStatus, errorThrown) {
-                                            $('#deleteSelectedFailed-info').text(errorThrown);
-                                            $("#deleteSelectedFailed").click();
-                                        },
-                                        complete: function (jqXHR, textStatus) {
-                                            updateTable('#queuedEmails-grid');
+                                $(document).ready(function() {
+                                    $("#@Html.IdFor(model => model.GoDirectlyToNumber)").keydown(function (event) {
+                                        if (event.keyCode === 13) {
+                                            $("#go-to-email-by-number").click();
+                                            return false;
                                         }
                                     });
-                                    $('#delete-selected-action-confirmation').modal('toggle');
-                                    return false;
+
+                                    //"delete selected" button
+                                    $("#delete-selected-action-confirmation-submit-button").bind("click", function () {
+                                        var postData = {
+                                            selectedIds: selectedIds
+                                        };
+                                        addAntiForgeryToken(postData);
+                                        $.ajax({
+                                            cache: false,
+                                            type: "POST",
+                                            url: "@(Url.Action("DeleteSelected", "QueuedEmail"))",
+                                            data: postData,
+                                            traditional: true,
+                                            error: function (jqXHR, textStatus, errorThrown) {
+                                                $('#deleteSelectedFailed-info').text(errorThrown);
+                                                $("#deleteSelectedFailed").click();
+                                            },
+                                            complete: function (jqXHR, textStatus) {
+                                                updateTable('#queuedEmails-grid');
+                                            }
+                                        });
+                                        $('#delete-selected-action-confirmation').modal('toggle');
+                                        return false;
+                                    });
                                 });
-                            });
-                        </script>*@
+                            </script>*@
 
 
                     </div>
